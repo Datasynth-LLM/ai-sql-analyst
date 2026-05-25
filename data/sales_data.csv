@@ -1,4 +1,4 @@
-order_id,customer_name,product,category,region,sales,quantity,order_date
+order_id,customer_id,product,category,region,sales,quantity,order_date
 1001,John Smith,Laptop,Electronics,North,1200,2,15-01-2025
 1002,Alice Brown,Phone,Electronics,South,800,1,18-01-2025
 1003,David Lee,Desk Chair,Furniture,East,350,3,20-01-2025

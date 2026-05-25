@@ -1,4 +1,4 @@
-customer_id,customer_name,region,city,age,gender,membership,total_orders,total_spent
+customer_id,customer_id,region,city,age,gender,membership,total_orders,total_spent
 C001,Emma Davis,South,Miami,32,Female,Gold,15,12500
 C002,John Smith,West,Los Angeles,41,Male,Silver,9,8400
 C003,Sophia Brown,East,New York,28,Female,Gold,22,19400
