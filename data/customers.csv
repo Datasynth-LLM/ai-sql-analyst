@@ -1,0 +1,11 @@
+customer_id,customer_name,region,city,age,gender,membership,total_orders,total_spent
+C001,Emma Davis,South,Miami,32,Female,Gold,15,12500
+C002,John Smith,West,Los Angeles,41,Male,Silver,9,8400
+C003,Sophia Brown,East,New York,28,Female,Gold,22,19400
+C004,Michael Johnson,North,Chicago,36,Male,Bronze,6,4200
+C005,Olivia Wilson,South,Houston,30,Female,Silver,11,9700
+C006,Daniel Martinez,West,San Francisco,45,Male,Gold,18,15800
+C007,Ava Taylor,East,Boston,27,Female,Platinum,25,22800
+C008,James Anderson,North,Seattle,39,Male,Silver,10,7600
+C009,Isabella Thomas,South,Atlanta,31,Female,Gold,14,13100
+C010,William Moore,West,Las Vegas,43,Male,Bronze,5,3900
