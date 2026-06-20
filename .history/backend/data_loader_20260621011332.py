@@ -4,10 +4,12 @@ import os
 from sqlalchemy import create_engine
 
 # --------------------------------
-# RENDER SAFE DATABASE DIRECTORY
+# DATABASE SETUP
 # --------------------------------
 
-BASE_DIR = "/tmp"
+BASE_DIR = os.path.dirname(
+    os.path.abspath(__file__)
+)
 
 DATABASE_DIR = os.path.join(
     BASE_DIR,
@@ -19,23 +21,12 @@ os.makedirs(
     exist_ok=True
 )
 
-# --------------------------------
-# DATABASE PATH
-# --------------------------------
-
 DATABASE_PATH = os.path.join(
     DATABASE_DIR,
     "analytics.db"
 )
 
 DATABASE_URL = f"sqlite:///{DATABASE_PATH}"
-
-print("\nDATABASE PATH:")
-print(DATABASE_PATH)
-
-# --------------------------------
-# CREATE ENGINE
-# --------------------------------
 
 engine = create_engine(
     DATABASE_URL,
@@ -45,15 +36,12 @@ engine = create_engine(
 )
 
 # --------------------------------
-# LOAD CSV INTO DATABASE
+# LOAD CSV
 # --------------------------------
 
 def load_csv_to_db(file_path):
 
     try:
-
-        print("\nLOADING FILE:")
-        print(file_path)
 
         df = pd.read_csv(
             file_path
