@@ -1,0 +1,16 @@
+order_id,customer_name,product,category,region,sales,quantity,order_date
+1001,John Smith,Laptop,Electronics,North,1200,2,2025-01-15
+1002,Alice Brown,Phone,Electronics,South,800,1,2025-01-18
+1003,David Lee,Desk Chair,Furniture,East,350,3,2025-01-20
+1004,Sarah Wilson,Monitor,Electronics,West,450,2,2025-01-22
+1005,Michael Clark,Tablet,Electronics,North,600,1,2025-01-25
+1006,Emma Davis,Sofa,Furniture,South,1500,1,2025-01-27
+1007,James Miller,Printer,Electronics,East,300,2,2025-02-01
+1008,Olivia Moore,Desk,Furniture,West,700,1,2025-02-03
+1009,William Taylor,Headphones,Electronics,North,200,4,2025-02-05
+1010,Sophia Anderson,Bookshelf,Furniture,South,400,1,2025-02-08
+1011,Liam Thomas,Laptop,Electronics,East,1300,1,2025-02-10
+1012,Ava Jackson,Phone,Electronics,West,850,2,2025-02-12
+1013,Noah White,Desk Chair,Furniture,North,375,2,2025-02-14
+1014,Isabella Harris,Monitor,Electronics,South,500,1,2025-02-16
+1015,Ethan Martin,Tablet,Electronics,East,650,2,2025-02-18
