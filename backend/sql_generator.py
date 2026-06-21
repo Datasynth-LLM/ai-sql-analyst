@@ -42,6 +42,7 @@ def clean_sql(response):
 
     return sql_query
 
+
 # --------------------------------
 # VALIDATE SQL
 # --------------------------------
@@ -76,6 +77,7 @@ def validate_sql(sql_query):
 
     return True
 
+
 # --------------------------------
 # DETECT TABLES
 # --------------------------------
@@ -102,6 +104,7 @@ def detect_tables(schema_text):
 
     return tables
 
+
 # --------------------------------
 # RULE BASED SQL
 # --------------------------------
@@ -118,6 +121,8 @@ def rule_based_sql(question, tables):
 
             sales_table = table
 
+            break
+
     print("\nSALES TABLE:")
     print(sales_table)
 
@@ -125,7 +130,7 @@ def rule_based_sql(question, tables):
         return None
 
     # --------------------------------
-    # SHOW ALL TABLES
+    # SHOW TABLES
     # --------------------------------
 
     if "show all tables" in question:
@@ -134,43 +139,6 @@ def rule_based_sql(question, tables):
 SELECT name
 FROM sqlite_master
 WHERE type='table';
-"""
-
-    # --------------------------------
-    # CUSTOMER SALES
-    # --------------------------------
-
-    if (
-        "customer_name" in question
-        and
-        "sales" in question
-    ):
-
-        return f"""
-SELECT customer_name,
-SUM(sales) AS total_sales
-FROM {sales_table}
-GROUP BY customer_name
-ORDER BY total_sales DESC;
-"""
-
-    # --------------------------------
-    # TOP CUSTOMERS
-    # --------------------------------
-
-    if (
-        "top customers" in question
-        or
-        "highest spending" in question
-    ):
-
-        return f"""
-SELECT customer_name,
-SUM(sales) AS total_sales
-FROM {sales_table}
-GROUP BY customer_name
-ORDER BY total_sales DESC
-LIMIT 10;
 """
 
     # --------------------------------
@@ -184,8 +152,9 @@ LIMIT 10;
     ):
 
         return f"""
-SELECT region,
-SUM(sales) AS total_sales
+SELECT
+    region,
+    SUM(sales) AS total_sales
 FROM {sales_table}
 GROUP BY region
 ORDER BY total_sales DESC;
@@ -202,11 +171,51 @@ ORDER BY total_sales DESC;
     ):
 
         return f"""
-SELECT category,
-SUM(sales) AS total_sales
+SELECT
+    category,
+    SUM(sales) AS total_sales
 FROM {sales_table}
 GROUP BY category
 ORDER BY total_sales DESC;
+"""
+
+    # --------------------------------
+    # CUSTOMER SALES
+    # --------------------------------
+
+    if (
+        "customer" in question
+        and
+        "sales" in question
+    ):
+
+        return f"""
+SELECT
+    customer_name,
+    SUM(sales) AS total_sales
+FROM {sales_table}
+GROUP BY customer_name
+ORDER BY total_sales DESC;
+"""
+
+    # --------------------------------
+    # TOP CUSTOMERS
+    # --------------------------------
+
+    if (
+        "top customers" in question
+        or
+        "highest spending" in question
+    ):
+
+        return f"""
+SELECT
+    customer_name,
+    SUM(sales) AS total_sales
+FROM {sales_table}
+GROUP BY customer_name
+ORDER BY total_sales DESC
+LIMIT 10;
 """
 
     # --------------------------------
@@ -216,12 +225,15 @@ ORDER BY total_sales DESC;
     if (
         "top products" in question
         or
-        "best selling products" in question
+        "best selling" in question
+        or
+        "product sales" in question
     ):
 
         return f"""
-SELECT product,
-SUM(sales) AS total_sales
+SELECT
+    product,
+    SUM(sales) AS total_sales
 FROM {sales_table}
 GROUP BY product
 ORDER BY total_sales DESC
@@ -229,17 +241,55 @@ LIMIT 10;
 """
 
     # --------------------------------
+    # AVERAGE SALES BY REGION
+    # --------------------------------
+
+    if (
+        "average sales" in question
+        and
+        "region" in question
+    ):
+
+        return f"""
+SELECT
+    region,
+    AVG(sales) AS average_sales
+FROM {sales_table}
+GROUP BY region
+ORDER BY average_sales DESC;
+"""
+
+    # --------------------------------
+    # HIGHEST SALE
+    # --------------------------------
+
+    if (
+        "highest sale" in question
+        or
+        "largest sale" in question
+    ):
+
+        return f"""
+SELECT *
+FROM {sales_table}
+ORDER BY sales DESC
+LIMIT 1;
+"""
+
+    # --------------------------------
     # TOTAL SALES
     # --------------------------------
 
-    if "total sales" in question:
+    if question.strip() == "total sales":
 
         return f"""
-SELECT SUM(sales) AS total_sales
+SELECT
+    SUM(sales) AS total_sales
 FROM {sales_table};
 """
 
     return None
+
 
 # --------------------------------
 # GENERATE SQL
@@ -280,6 +330,7 @@ RULES:
 2. Return ONLY SQL
 3. SQLite syntax only
 4. Query must start with SELECT
+5. Never explain the SQL
 
 QUESTION:
 {user_question}
