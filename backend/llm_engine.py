@@ -9,7 +9,7 @@ load_dotenv()
 # CONFIG
 # --------------------------------
 
-MODEL_NAME = "gemini-2.5-flash"
+MODEL_NAME = "gemini-1.5-flash"
 
 # --------------------------------
 # LOCAL OLLAMA
@@ -61,26 +61,34 @@ def generate_response(prompt):
             )
 
         # -----------------------------
-        # PRODUCTION MODE (GEMINI)
-        # -----------------------------
+# PRODUCTION MODE (GEMINI)
+# -----------------------------
 
-        api_key = os.getenv(
-            "GEMINI_API_KEY"
-        )
+api_key = os.getenv("GEMINI_API_KEY")
 
-        genai.configure(
-            api_key=api_key
-        )
+print("\n========== GEMINI DEBUG ==========")
+print("ENVIRONMENT =", os.getenv("ENVIRONMENT"))
+print("API KEY EXISTS =", api_key is not None)
+print("API KEY LENGTH =", len(api_key) if api_key else 0)
 
-        model = genai.GenerativeModel(
-            MODEL_NAME
-        )
+if api_key:
+    print("API KEY PREFIX =", api_key[:10])
 
-        response = model.generate_content(
-            prompt
-        )
+print("==================================")
 
-        return response.text
+genai.configure(
+    api_key=api_key
+)
+
+model = genai.GenerativeModel(
+    MODEL_NAME
+)
+
+response = model.generate_content(
+    prompt
+)
+
+return response.text
 
     except Exception as e:
 
