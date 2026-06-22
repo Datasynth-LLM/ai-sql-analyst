@@ -1,3 +1,4 @@
+````python
 from backend.llm_engine import generate_response
 from backend.schema_manager import get_database_schema
 
@@ -130,15 +131,37 @@ def rule_based_sql(question, tables):
         return None
 
     # --------------------------------
-    # SHOW TABLES
+    # SHOW ALL TABLES
     # --------------------------------
 
     if "show all tables" in question:
 
         return """
-SELECT name
+SELECT
+    name AS available_tables
 FROM sqlite_master
-WHERE type='table';
+WHERE type='table'
+ORDER BY name;
+"""
+
+    # --------------------------------
+    # TOP CUSTOMERS
+    # --------------------------------
+
+    if (
+        "top customers" in question
+        or
+        "highest spending" in question
+    ):
+
+        return f"""
+SELECT
+    customer_name,
+    SUM(sales) AS total_sales
+FROM {sales_table}
+GROUP BY customer_name
+ORDER BY total_sales DESC
+LIMIT 10;
 """
 
     # --------------------------------
@@ -196,26 +219,6 @@ SELECT
 FROM {sales_table}
 GROUP BY customer_name
 ORDER BY total_sales DESC;
-"""
-
-    # --------------------------------
-    # TOP CUSTOMERS
-    # --------------------------------
-
-    if (
-        "top customers" in question
-        or
-        "highest spending" in question
-    ):
-
-        return f"""
-SELECT
-    customer_name,
-    SUM(sales) AS total_sales
-FROM {sales_table}
-GROUP BY customer_name
-ORDER BY total_sales DESC
-LIMIT 10;
 """
 
     # --------------------------------
@@ -280,7 +283,7 @@ LIMIT 1;
     # TOTAL SALES
     # --------------------------------
 
-    if question.strip() == "total sales":
+    if "total sales" in question:
 
         return f"""
 SELECT
@@ -368,7 +371,10 @@ SQL:
         )
 
     return """
-SELECT name
+SELECT
+    name AS available_tables
 FROM sqlite_master
-WHERE type='table';
+WHERE type='table'
+ORDER BY name;
 """
+````
