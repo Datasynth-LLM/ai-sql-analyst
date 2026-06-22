@@ -1,4 +1,4 @@
-````python
+python
 from backend.llm_engine import generate_response
 from backend.schema_manager import get_database_schema
 
@@ -377,4 +377,4 @@ FROM sqlite_master
 WHERE type='table'
 ORDER BY name;
 """
-````
+
