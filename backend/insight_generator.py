@@ -2,114 +2,125 @@ import pandas as pd
 
 from backend.llm_engine import generate_response
 
+
 # --------------------------------
-# GENERATE AI INSIGHTS
+# HELPER FUNCTIONS
 # --------------------------------
 
-def generate_insights(question, results):
+def _build_summary(df):
 
-    try:
+    summary = []
 
-        # --------------------------------
-        # VALIDATION
-        # --------------------------------
+    summary.append(f"Rows Returned: {len(df)}")
+    summary.append(f"Columns Returned: {len(df.columns)}")
 
-        if results is None:
+    numeric_cols = df.select_dtypes(include="number").columns.tolist()
+    object_cols = df.select_dtypes(exclude="number").columns.tolist()
 
-            return "No results available."
+    # -----------------------------
+    # Numeric analysis
+    # -----------------------------
 
-        # Convert list to DataFrame
+    for col in numeric_cols:
 
-        if isinstance(results, list):
+        summary.append("")
 
-            df = pd.DataFrame(results)
+        summary.append(f"Metric: {col}")
 
-        elif isinstance(results, pd.DataFrame):
+        summary.append(
+            f"Total = {df[col].sum():,.2f}"
+        )
 
-            df = results
+        summary.append(
+            f"Average = {df[col].mean():,.2f}"
+        )
+
+        summary.append(
+            f"Maximum = {df[col].max():,.2f}"
+        )
+
+        summary.append(
+            f"Minimum = {df[col].min():,.2f}"
+        )
+
+        if len(df) > 1:
+
+            max_row = df.loc[df[col].idxmax()]
+            min_row = df.loc[df[col].idxmin()]
+
+            for c in object_cols[:2]:
+
+                if c in df.columns:
+
+                    summary.append(
+                        f"Highest {col}: {max_row[c]} ({max_row[col]:,.2f})"
+                    )
+
+                    summary.append(
+                        f"Lowest {col}: {min_row[c]} ({min_row[col]:,.2f})"
+                    )
+
+                    break
+
+    # -----------------------------
+    # Missing values
+    # -----------------------------
+
+    missing = df.isna().sum().sum()
+
+    summary.append("")
+    summary.append(f"Missing Values: {missing}")
+
+    return "\n".join(summary)
+
+
+# --------------------------------
+# FALLBACK INSIGHTS
+# --------------------------------
+
+def _fallback_insights(df):
+
+    insights = []
+
+    insights.append("📊 Key Findings")
+
+    insights.append(
+        f"• {len(df)} records were returned."
+    )
+
+    numeric_cols = df.select_dtypes(
+        include="number"
+    ).columns.tolist()
+
+    object_cols = df.select_dtypes(
+        exclude="number"
+    ).columns.tolist()
+
+    if numeric_cols:
+
+        metric = numeric_cols[-1]
+
+        highest = df.loc[
+            df[metric].idxmax()
+        ]
+
+        lowest = df.loc[
+            df[metric].idxmin()
+        ]
+
+        if object_cols:
+
+            label = object_cols[0]
+
+            insights.append(
+                f"• Highest {metric}: {highest[label]} ({highest[metric]:,.2f})"
+            )
+
+            insights.append(
+                f"• Lowest {metric}: {lowest[label]} ({lowest[metric]:,.2f})"
+            )
 
         else:
-
-            return "Unsupported result format."
-
-        # Empty DataFrame
-
-        if df.empty:
-
-            return "No data available."
-
-        # --------------------------------
-        # PREPARE DATA FOR GEMINI
-        # --------------------------------
-
-        data_preview = df.head(20).to_csv(
-            index=False
-        )
-
-        prompt = f"""
-You are a senior business analyst.
-
-IMPORTANT RULES:
-
-1. Use ONLY the data provided below.
-2. Do NOT use external knowledge.
-3. Do NOT invent facts.
-4. Do NOT discuss industries, geography, economics, or trends unless explicitly present in the data.
-5. Keep the analysis concise and professional.
-
-BUSINESS QUESTION:
-{question}
-
-DATA:
-{data_preview}
-
-Provide:
-
-1. Key Findings
-2. Business Insights
-3. Recommendations
-
-Use bullet points only.
-Maximum 8 bullets.
-"""
-
-        # --------------------------------
-        # GEMINI ANALYSIS
-        # --------------------------------
-
-        ai_response = generate_response(
-            prompt
-        )
-
-        if ai_response:
-
-            ai_response = ai_response.strip()
-
-            if len(ai_response) > 20:
-
-                return ai_response
-
-        # --------------------------------
-        # FALLBACK INSIGHTS
-        # --------------------------------
-
-        insights = []
-
-        numeric_cols = df.select_dtypes(
-            include="number"
-        ).columns.tolist()
-
-        if numeric_cols:
-
-            metric = numeric_cols[-1]
-
-            insights.append(
-                f"• Total {metric}: {df[metric].sum():,.2f}"
-            )
-
-            insights.append(
-                f"• Average {metric}: {df[metric].mean():,.2f}"
-            )
 
             insights.append(
                 f"• Maximum {metric}: {df[metric].max():,.2f}"
@@ -119,38 +130,168 @@ Maximum 8 bullets.
                 f"• Minimum {metric}: {df[metric].min():,.2f}"
             )
 
-        object_cols = df.select_dtypes(
-            include="object"
-        ).columns.tolist()
+        insights.append(
+            f"• Average {metric}: {df[metric].mean():,.2f}"
+        )
+
+        insights.append("")
+
+        insights.append("📈 Business Insights")
+
+        insights.append(
+            "• Results are generated directly from the returned SQL data."
+        )
+
+        insights.append(
+            "• No external assumptions were used."
+        )
+
+        insights.append("")
+
+        insights.append("🔍 Suggested Next Analysis")
 
         if object_cols:
 
-            first_col = object_cols[0]
-
-            try:
-
-                top_item = (
-                    df[first_col]
-                    .value_counts()
-                    .idxmax()
-                )
-
-                insights.append(
-                    f"• Most frequent {first_col}: {top_item}"
-                )
-
-            except:
-
-                pass
-
-        if insights:
-
-            return "\n".join(
-                insights[:5]
+            insights.append(
+                f"• Compare {metric} across {object_cols[0]} over time."
             )
 
-        return "No insights generated."
+        else:
+
+            insights.append(
+                f"• Explore trends for {metric}."
+            )
+
+    return "\n".join(insights)
+
+
+# --------------------------------
+# MAIN FUNCTION
+# --------------------------------
+
+def generate_insights(question, results):
+
+    try:
+
+        if results is None:
+
+            return "No results available."
+
+        if isinstance(results, list):
+
+            df = pd.DataFrame(results)
+
+        elif isinstance(results, pd.DataFrame):
+
+            df = results.copy()
+
+        else:
+
+            return "Unsupported result format."
+
+        if df.empty:
+
+            return "No data available."
+
+        summary = _build_summary(df)
+
+        table = df.head(20).to_markdown(index=False)
+
+        prompt = f"""
+You are a Senior Business Intelligence Analyst.
+
+Your job is to analyze ONLY the SQL output.
+
+Never explain SQL.
+
+Never repeat the user's question.
+
+Never repeat the table.
+
+Never invent information.
+
+Only analyze the returned data.
+
+Business Question:
+
+{question}
+
+Computed Statistics:
+
+{summary}
+
+SQL Table:
+
+{table}
+
+Return EXACTLY these sections:
+
+📊 Key Findings
+
+3 bullet points.
+
+📈 Business Insights
+
+3 bullet points.
+
+🔍 Suggested Next Analysis
+
+2 bullet points.
+
+Rules:
+
+- Professional language
+- Maximum 8 bullets total
+- No paragraphs
+- No markdown tables
+- Do not restate the SQL results.
+"""
+        # --------------------------------
+        # GENERATE AI INSIGHTS
+        # --------------------------------
+
+        ai_response = generate_response(prompt)
+
+        print("\n========== GEMINI INSIGHTS ==========")
+        print(ai_response)
+        print("=====================================\n")
+
+        if ai_response:
+
+            cleaned = ai_response.strip()
+
+            # Basic validation to avoid useless echoed responses
+            bad_phrases = [
+                "BUSINESS QUESTION",
+                "SQL RESULT",
+                "SQL RESULTS",
+                "SELECT ",
+                "FROM ",
+                "How can we"
+            ]
+
+            upper = cleaned.upper()
+
+            if (
+                len(cleaned) > 40
+                and not any(
+                    phrase.upper() in upper
+                    for phrase in bad_phrases
+                )
+            ):
+                return cleaned
+
+        print("Using Python fallback insights...")
+
+        return _fallback_insights(df)
 
     except Exception as e:
 
-        return f"Insight generation failed: {str(e)}"
+        print("\n========== INSIGHT ERROR ==========")
+        print(str(e))
+        print("===================================\n")
+
+        try:
+            return _fallback_insights(df)
+        except Exception:
+            return f"Insight generation failed: {str(e)}"

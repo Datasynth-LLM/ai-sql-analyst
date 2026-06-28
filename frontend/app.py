@@ -14,44 +14,10 @@ st.set_page_config(
 )
 
 # --------------------------------
-# CUSTOM CSS
+# API URL
 # --------------------------------
 
-st.markdown("""
-<style>
-
-.main {
-    background-color: #0E1117;
-    color: white;
-}
-
-h1, h2, h3 {
-    color: white;
-}
-
-.stMetric {
-    background-color: #1E1E1E;
-    padding: 15px;
-    border-radius: 12px;
-    border: 1px solid #333;
-}
-
-div.stButton > button {
-    width: 100%;
-    border-radius: 10px;
-    height: 3em;
-    font-size: 15px;
-    font-weight: bold;
-}
-
-</style>
-""", unsafe_allow_html=True)
-
-# --------------------------------
-# BACKEND API URL
-# --------------------------------
-
-API_URL = "https://ai-sql-analyst-backend.onrender.com"
+API_URL = "http://127.0.0.1:8000"
 
 # --------------------------------
 # SESSION STATE
@@ -62,6 +28,28 @@ if "history" not in st.session_state:
 
 if "selected_query" not in st.session_state:
     st.session_state.selected_query = ""
+
+if "dataset_uploaded" not in st.session_state:
+    st.session_state.dataset_uploaded = False
+
+if "query_data" not in st.session_state:
+    st.session_state.query_data = None
+
+# --------------------------------
+# CSS
+# --------------------------------
+
+st.markdown("""
+<style>
+
+.stMetric{
+    background:#1E1E1E;
+    padding:15px;
+    border-radius:10px;
+}
+
+</style>
+""", unsafe_allow_html=True)
 
 # --------------------------------
 # SIDEBAR
@@ -76,7 +64,7 @@ uploaded_files = st.sidebar.file_uploader(
 )
 
 # --------------------------------
-# UPLOAD DATASETS
+# UPLOAD
 # --------------------------------
 
 if uploaded_files:
@@ -85,48 +73,55 @@ if uploaded_files:
 
         success_count = 0
 
-        for uploaded_file in uploaded_files:
+        with st.spinner("Uploading datasets..."):
 
-            files = {
-                "file": (
-                    uploaded_file.name,
-                    uploaded_file,
-                    "text/csv"
-                )
-            }
+            for uploaded_file in uploaded_files:
 
-            try:
+                try:
 
-                response = requests.post(
-                    f"{API_URL}/upload-csv",
-                    files=files
-                )
+                    files = {
+                        "file": (
+                            uploaded_file.name,
+                            uploaded_file,
+                            "text/csv"
+                        )
+                    }
 
-                data = response.json()
-
-                if data.get("status") == "success":
-
-                    success_count += 1
-
-                    st.sidebar.success(
-                        f"{uploaded_file.name} uploaded successfully!"
+                    response = requests.post(
+                        f"{API_URL}/upload-csv",
+                        files=files,
+                        timeout=120
                     )
 
-                else:
+                    data = response.json()
+
+                    if data.get("status") == "success":
+
+                        success_count += 1
+
+                        st.sidebar.success(
+                            f"✅ {uploaded_file.name}"
+                        )
+
+                    else:
+
+                        st.sidebar.error(
+                            f"❌ {uploaded_file.name}"
+                        )
+
+                except Exception as e:
 
                     st.sidebar.error(
-                        f"{uploaded_file.name}: {data.get('message')}"
+                        str(e)
                     )
 
-            except Exception as e:
+        if success_count > 0:
 
-                st.sidebar.error(
-                    f"{uploaded_file.name}: {str(e)}"
-                )
+            st.session_state.dataset_uploaded = True
 
-        st.sidebar.success(
-            f"{success_count} dataset(s) uploaded successfully!"
-        )
+            st.sidebar.success(
+                f"{success_count} dataset(s) uploaded successfully"
+            )
 
 # --------------------------------
 # HEADER
@@ -135,79 +130,84 @@ if uploaded_files:
 st.title("📊 AI SQL Analyst")
 
 st.markdown("""
-Professional AI-powered analytics dashboard supporting:
+AI Powered Analytics Dashboard
 
-• Multiple Dataset Uploads  
-• SQL Generation  
-• KPI Analytics  
-• Interactive Visualizations  
-• AI Insights  
-• Dynamic Table Detection  
+• CSV Upload
+• SQL Generation
+• KPI Analytics
+• Visualizations
+• AI Insights
 """)
 
 # --------------------------------
-# QUICK QUERY SUGGESTIONS
+# QUICK BUTTONS
 # --------------------------------
 
 st.subheader("⚡ Quick Query Suggestions")
 
-q1, q2, q3, q4 = st.columns(4)
+c1, c2, c3, c4 = st.columns(4)
 
-with q1:
+with c1:
+
     if st.button("Show All Tables"):
+
         st.session_state.selected_query = (
             "show all tables"
         )
 
-with q2:
+with c2:
+
     if st.button("Customer Sales"):
+
         st.session_state.selected_query = (
-            "Show customer_name and total sales"
+            "show customer sales"
         )
 
-with q3:
+with c3:
+
     if st.button("Sales by Region"):
+
         st.session_state.selected_query = (
-            "Show total sales by region"
+            "show total sales by region"
         )
 
-with q4:
+with c4:
+
     if st.button("Top Customers"):
+
         st.session_state.selected_query = (
-            "Show highest spending customers"
+            "show highest spending customers"
         )
 
 # --------------------------------
-# USER QUESTION
+# QUESTION
 # --------------------------------
 
 question = st.text_input(
-    "Ask your business question:",
+    "Ask your business question",
     value=st.session_state.selected_query
 )
 
 # --------------------------------
-# GENERATE ANALYTICS
+# GENERATE
 # --------------------------------
-
-query_data = None
 
 if st.button("Generate Analytics"):
 
     if question.strip() == "":
 
         st.warning(
-            "Please enter a question."
+            "Please enter a question"
         )
 
     else:
 
-        payload = {
-            "question": question,
-            "generate_insights": True
-        }
-
         try:
+
+            payload = {
+                "question": question,
+                "generate_insights": True
+            }
 
             with st.spinner(
                 "Generating analytics..."
@@ -215,10 +215,13 @@ if st.button("Generate Analytics"):
 
                 response = requests.post(
                     f"{API_URL}/ask",
-                    json=payload
+                    json=payload,
+                    timeout=120
                 )
 
-            query_data = response.json()
+            st.session_state.query_data = (
+                response.json()
+            )
 
             st.session_state.history.append(
                 question
@@ -231,8 +234,10 @@ if st.button("Generate Analytics"):
             )
 
 # --------------------------------
-# DISPLAY RESULTS
+# RESULTS
 # --------------------------------
+
+query_data = st.session_state.query_data
 
 if query_data:
 
@@ -244,34 +249,30 @@ if query_data:
 
     else:
 
-        results = query_data.get(
-            "results",
-            []
+        df = pd.DataFrame(
+            query_data.get(
+                "results",
+                []
+            )
         )
 
-        df = pd.DataFrame(results)
+        tab1, tab2, tab3, tab4 = st.tabs(
+            [
+                "📊 Analytics",
+                "📈 Visualizations",
+                "🧠 AI Insights",
+                "🕘 History"
+            ]
+        )
 
-        # --------------------------------
-        # TABS
-        # --------------------------------
-
-        tab1, tab2, tab3, tab4 = st.tabs([
-
-            "📊 Analytics",
-            "📈 Visualizations",
-            "🧠 AI Insights",
-            "🕘 Query History"
-
-        ])
-
-        # =================================
-        # TAB 1
-        # =================================
+        # -------------------------
+        # ANALYTICS
+        # -------------------------
 
         with tab1:
 
             st.subheader(
-                "Generated SQL Query"
+                "Generated SQL"
             )
 
             st.code(
@@ -282,131 +283,106 @@ if query_data:
                 language="sql"
             )
 
-            # --------------------------------
-            # DEBUG TABLE OUTPUT
-            # --------------------------------
-
             st.subheader(
-                "📋 Query Results"
+                "Results"
             )
-            
 
             st.dataframe(
                 df,
-                width="stretch"
+                use_container_width=True
             )
 
-            # --------------------------------
-            # KPIs
-            # --------------------------------
-
-            numeric_cols = df.select_dtypes(
-                include="number"
-            ).columns.tolist()
+            numeric_cols = (
+                df.select_dtypes(
+                    include="number"
+                ).columns.tolist()
+            )
 
             if numeric_cols:
 
                 metric = numeric_cols[0]
 
-                c1, c2, c3, c4 = st.columns(4)
+                m1, m2, m3, m4 = st.columns(4)
 
-                with c1:
-                    st.metric(
-                        "Total",
-                        round(
-                            df[metric].sum(),
-                            2
-                        )
+                m1.metric(
+                    "Total",
+                    round(
+                        df[metric].sum(),
+                        2
                     )
+                )
 
-                with c2:
-                    st.metric(
-                        "Average",
-                        round(
-                            df[metric].mean(),
-                            2
-                        )
+                m2.metric(
+                    "Average",
+                    round(
+                        df[metric].mean(),
+                        2
                     )
+                )
 
-                with c3:
-                    st.metric(
-                        "Maximum",
-                        round(
-                            df[metric].max(),
-                            2
-                        )
+                m3.metric(
+                    "Maximum",
+                    round(
+                        df[metric].max(),
+                        2
                     )
+                )
 
-                with c4:
-                    st.metric(
-                        "Rows",
-                        len(df)
-                    )
+                m4.metric(
+                    "Rows",
+                    len(df)
+                )
 
-        # =================================
-        # TAB 2
-        # =================================
+        # -------------------------
+        # VISUALIZATION
+        # -------------------------
 
         with tab2:
 
-            st.subheader(
-                "📈 Visualizations"
-            )
-
             if len(df.columns) >= 2:
-
-                x_col = df.columns[0]
-                y_col = df.columns[1]
 
                 try:
 
                     fig = px.bar(
                         df,
-                        x=x_col,
-                        y=y_col,
-                        title=f"{y_col} by {x_col}"
+                        x=df.columns[0],
+                        y=df.columns[1]
                     )
 
                     st.plotly_chart(
                         fig,
-                        width="stretch"
+                        use_container_width=True
                     )
 
                 except Exception as e:
 
                     st.warning(
-                        f"Chart error: {str(e)}"
+                        str(e)
                     )
 
-        # =================================
-        # TAB 3
-        # =================================
+        # -------------------------
+        # INSIGHTS
+        # -------------------------
 
         with tab3:
 
-            st.subheader(
-                "🧠 AI Insights"
+            st.info(
+                query_data.get(
+                    "insights",
+                    "No insights"
+                )
             )
 
-            insights = query_data.get(
-                "insights",
-                "No insights generated."
-            )
-
-            st.info(insights)
-
-        # =================================
-        # TAB 4
-        # =================================
+        # -------------------------
+        # HISTORY
+        # -------------------------
 
         with tab4:
-
-            st.subheader(
-                "🕘 Query History"
-            )
 
             for item in reversed(
                 st.session_state.history
             ):
 
-                st.write(f"• {item}")
+                st.write(
+                    f"• {item}"
+                )

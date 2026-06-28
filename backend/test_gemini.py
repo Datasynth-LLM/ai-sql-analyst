@@ -1,18 +1,33 @@
-from backend.llm_engine import generate_response
+import pandas as pd
 
-prompt = """
-You are a business analyst.
+from backend.insight_generator import generate_insights
 
-Sales by Region:
+df = pd.DataFrame({
 
-South 3200
-East 2600
-North 2375
-West 2000
+    "region": [
+        "South",
+        "East",
+        "North",
+        "West"
+    ],
 
-Provide business insights.
-"""
+    "total_sales": [
+        3200,
+        2600,
+        2375,
+        2000
+    ]
 
-response = generate_response(prompt)
+})
 
-print(response)
+result = generate_insights(
+
+    "Show total sales by region",
+
+    df
+
+)
+
+print("\nINSIGHTS:\n")
+
+print(result)
