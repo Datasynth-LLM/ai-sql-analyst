@@ -8,4 +8,4 @@ plotly
 requests
 python-dotenv
 python-multipart
-google-generativeai
+google-genaitabulate
