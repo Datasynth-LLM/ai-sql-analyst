@@ -17,7 +17,7 @@ st.set_page_config(
 # API URL
 # --------------------------------
 
-API_URL = "https://ai-sql-analyst-api.onrender.com"
+API_URL = "https://ai-sql-analyst-backend.onrender.com"
 
 # --------------------------------
 # SESSION STATE
