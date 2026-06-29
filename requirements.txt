@@ -8,4 +8,5 @@ plotly
 requests
 python-dotenv
 python-multipart
-google-genaitabulate
+google-genai
+tabulate
