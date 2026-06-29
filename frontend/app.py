@@ -92,17 +92,11 @@ if uploaded_files:
                         files=files,
                         timeout=120
                     )
-                    st.write("Status:", response.status_code)
-                    st.write("Headers:" , response.headers)
                     
-                    try:
-                        data = response.json()
-                        st.write(data)
-                    except Exception:
-                        st.error("Backend did not return JSON")
-                        st.write(response.text)
-                        st.stop()
-
+                    response.raise_for_status()
+                    
+                    data = response.json()
+                       
                     if data.get("status") == "success":
 
                         success_count += 1
@@ -226,6 +220,8 @@ if st.button("Generate Analytics"):
                     json=payload,
                     timeout=120
                 )
+                response.raise_for_status()
+                
 
             st.session_state.query_data = (
                 response.json()
@@ -374,7 +370,7 @@ if query_data:
 
         with tab3:
 
-            st.info(
+            st.markdown(
                 query_data.get(
                     "insights",
                     "No insights"
