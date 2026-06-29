@@ -92,8 +92,16 @@ if uploaded_files:
                         files=files,
                         timeout=120
                     )
-
-                    data = response.json()
+                    st.write("Status:", response.status_code)
+                    st.write("Headers:" , response.headers)
+                    
+                    try:
+                        data = response.json()
+                        st.write(data)
+                    except Exception:
+                        st.error("Backend did not return JSON")
+                        st.write(response.text)
+                        st.stop()
 
                     if data.get("status") == "success":
 

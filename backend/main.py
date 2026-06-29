@@ -1,3 +1,4 @@
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI, UploadFile, File
 from pydantic import BaseModel
 import shutil
@@ -12,6 +13,16 @@ from backend.chart_detector import detect_chart_type
 
 app = FastAPI()
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "https://datasynth-ai-sql-analyst.streamlit.app",
+        "http://localhost:8501",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 # --------------------------------
 # REQUEST MODEL
 # --------------------------------
