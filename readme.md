@@ -1,15 +1,55 @@
 # 📊 AI SQL Analyst
-
-An AI-powered Business Intelligence dashboard that converts natural language questions into SQL queries, executes them on uploaded datasets, and generates analytics, visualizations, KPI dashboards, and AI-powered business insights.
-
+An AI-powered Business Intelligence platform that enables users to upload CSV datasets, query them using natural language, automatically generate SQL, visualize results, and receive AI-generated business insights. The application is built with FastAPI and Streamlit, powered by Google Gemini, and deployed on Render and Streamlit Cloud.
 ---
+###Architechture
+CSV Upload
+     │
+     ▼
+Streamlit UI
+     │
+     ▼
+FastAPI Backend
+     │
+     ▼
+SQLite Database
+     │
+     ▼
+SQL Generator
+     │
+     ▼
+Gemini AI Insights
+     │
+     ▼
+Dashboard + Charts
+
+## Example Workflow
+
+1. Upload a CSV dataset.
+2. The application automatically creates a SQLite table.
+3. Ask a business question in plain English.
+4. AI generates the SQL query.
+5. SQL executes against the uploaded dataset.
+6. Results are displayed as tables, KPIs, and interactive charts.
+7. Gemini generates business insights based on the query results.
+# 🌐 Live Demo
+
+### Frontend
+https://datasynth-ai-sql-analyst.streamlit.app
+
+### Backend API
+https://ai-sql-analyst-backend.onrender.com
+
+### GitHub Repository
+https://github.com/Datasynth-LLM/ai-sql-analyst
 
 # 🚀 Features
 
 ## ✅ AI-Powered SQL Generation
 - Convert natural language into SQL queries
-- Powered by local LLMs using Ollama
-- SQLite-compatible query generation
+- Powered by Google Gemini 2.5 Flash
+-Automatic SQL generation
+-Dynamic schema detection
+-SQLite query execution
 
 ## ✅ Interactive Analytics Dashboard
 - KPI dashboards
@@ -50,17 +90,19 @@ An AI-powered Business Intelligence dashboard that converts natural language que
 - SQLite
 - SQLAlchemy
 
-## AI / LLM
-- Ollama
-- TinyLlama
+## AI
+- Google Gemini 2.5 Flash
+- Google GenAI SDK
 
 ## Data Processing
 - Pandas
-
 ---
 
-# 📂 Project Structure
+## Deployment
+- Streamlit Cloud
+- Render
 
+# 📂 Project Structure
 ```bash
 ai-sql-analyst/
 │
@@ -125,26 +167,12 @@ pip install -r requirements.txt
 ```
 
 ---
+## Environment Variables
 
-# 🤖 Setup Ollama
+Create a .env file
 
-Install Ollama:
+GEMINI_API_KEY=YOUR_API_KEY
 
-- https://ollama.com
-
-Pull TinyLlama model:
-
-```bash
-ollama pull tinyllama
-```
-
-Start Ollama server:
-
-```bash
-ollama serve
-```
-
----
 
 # ▶️ Run Backend
 
@@ -193,17 +221,6 @@ http://localhost:8501
 - Business insights
 - Query history
 - Smart visualizations
-
----
-
-# 🎯 Future Enhancements
-
-- Multi-database support
-- Authentication system
-- Saved dashboards
-- Cloud deployment
-- Chat-style analytics assistant
-- Advanced LLM integrations
 
 ---
 
