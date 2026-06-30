@@ -1,7 +1,8 @@
 # 📊 AI SQL Analyst
 An AI-powered Business Intelligence platform that enables users to upload CSV datasets, query them using natural language, automatically generate SQL, visualize results, and receive AI-generated business insights. The application is built with FastAPI and Streamlit, powered by Google Gemini, and deployed on Render and Streamlit Cloud.
 ---
-###Architechture
+## 🏗️ Architecture
+```text
 CSV Upload
      │
      ▼
@@ -21,6 +22,7 @@ Gemini AI Insights
      │
      ▼
 Dashboard + Charts
+```
 
 ## Example Workflow
 
@@ -47,9 +49,9 @@ https://github.com/Datasynth-LLM/ai-sql-analyst
 ## ✅ AI-Powered SQL Generation
 - Convert natural language into SQL queries
 - Powered by Google Gemini 2.5 Flash
--Automatic SQL generation
--Dynamic schema detection
--SQLite query execution
+- Automatic SQL generation
+- Dynamic schema detection
+- SQLite query execution
 
 ## ✅ Interactive Analytics Dashboard
 - KPI dashboards
@@ -63,13 +65,6 @@ https://github.com/Datasynth-LLM/ai-sql-analyst
 - Trend analysis
 - Sales summaries
 - Region/product/category analysis
-
-## ✅ Dataset Profiling
-- Missing value analysis
-- Data type inspection
-- Numeric & categorical column detection
-- Unique value analysis
-- Dataset preview dashboard
 
 ## ✅ Smart Dashboard UX
 - Quick query suggestions
@@ -226,7 +221,7 @@ http://localhost:8501
 
 # 👨‍💻 Author
 
-Developed by Avish
+Developed by V
 
 GitHub:
 https://github.com/Datasynth-LLM
