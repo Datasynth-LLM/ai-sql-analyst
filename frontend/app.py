@@ -16,8 +16,8 @@ st.set_page_config(
 # --------------------------------
 # API URL
 # --------------------------------
-
-API_URL = "http://127.0.0.1:8000"
+ 
+ API_URL = "https://ai-sql-analyst-backend.onrender.com"
 
 # --------------------------------
 # SESSION STATE
@@ -293,7 +293,7 @@ if query_data:
 
             st.dataframe(
                 df,
-                use_container_width=True
+                width=True
             )
 
             numeric_cols = (
