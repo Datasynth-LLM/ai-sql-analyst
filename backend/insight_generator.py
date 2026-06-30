@@ -198,54 +198,62 @@ def generate_insights(question, results):
         table = df.head(20).to_markdown(index=False)
 
         prompt = f"""
-You are a Senior Business Intelligence Analyst.
+        You are an experienced Business Intelligence Analyst.
 
-Your job is to analyze ONLY the SQL output.
+        You must analyze ONLY the SQL query results provided.
 
-Never explain SQL.
+        Your analysis MUST be completely grounded in the data.
 
-Never repeat the user's question.
+        Never invent facts.
 
-Never repeat the table.
+        Never assume causes.
 
-Never invent information.
+        Never recommend loyalty programs, marketing strategies, pricing strategies, customer retention, operational improvements, or any information not directly supported by the data.
 
-Only analyze the returned data.
+        Never mention SQL.
 
-Business Question:
+        Never repeat the user's question.
 
-{question}
+        Never restate the table.
+        
+        Use ONLY the statistics and SQL output below.
 
-Computed Statistics:
+        Business Question:
+        {question}
 
-{summary}
+         Summary Statistics:
+         {summary}
 
-SQL Table:
+        SQL Result:
+        {table}
 
-{table}
+        Write exactly these three sections.
 
-Return EXACTLY these sections:
+        📊 Key Findings
+        - Exactly 3 bullet points.
+        - Mention the lowest value.
+        - Mention one overall statistic such as average, total, range or record count.
+        📈 Business Insights
+        - Exactly 3 bullet points.
+        - Only describe observable patterns in the returned data.
+        - If the data is insufficient for deeper conclusions, explicitly say so.
+        - Never speculate.
 
-📊 Key Findings
+        🔍 Suggested Next Analysis
+        - Exactly 2 bullet points.
+        - Suggest analyses that naturally extend this result.
+        - Do not give business advice.
 
-3 bullet points.
+        Rules:
+        - Maximum 8 bullets total.
+        - No paragraphs.
+        - No markdown tables.
+        - No code.
+        - No assumptions.
+        - No hallucinations.
+        - Base every statement only on the supplied SQL results.
+        """
 
-📈 Business Insights
-
-3 bullet points.
-
-🔍 Suggested Next Analysis
-
-2 bullet points.
-
-Rules:
-
-- Professional language
-- Maximum 8 bullets total
-- No paragraphs
-- No markdown tables
-- Do not restate the SQL results.
-"""
         # --------------------------------
         # GENERATE AI INSIGHTS
         # --------------------------------
