@@ -1,5 +1,10 @@
 # 📊 AI SQL Analyst
 An AI-powered Business Intelligence platform that enables users to upload CSV datasets, query them using natural language, automatically generate SQL, visualize results, and receive AI-generated business insights. The application is built with FastAPI and Streamlit, powered by Google Gemini, and deployed on Render and Streamlit Cloud.
+![Python](https://img.shields.io/badge/Python-3.11-blue)
+![FastAPI](https://img.shields.io/badge/FastAPI-Latest-green)
+![Streamlit](https://img.shields.io/badge/Streamlit-Cloud-red)
+![Gemini](https://img.shields.io/badge/Google-Gemini-orange)
+![SQLite](https://img.shields.io/badge/SQLite-Database-blue)
 ---
 ## 🏗️ Architecture
 ```text
@@ -106,7 +111,7 @@ ai-sql-analyst/
 │   ├── llm_engine.py
 │   ├── sql_generator.py
 │   ├── query_executor.py
-│   ├── insights_generator.py
+│   ├── insight_generator.py
 │   ├── chart_detector.py
 │
 ├── frontend/
