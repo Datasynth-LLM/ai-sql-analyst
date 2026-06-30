@@ -127,7 +127,7 @@ ai-sql-analyst/
 ## 1️⃣ Clone Repository
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/ai-sql-analyst.git
+git clone https://github.com/Datasynth-LLM/ai-sql-analyst.git
 cd ai-sql-analyst
 ```
 
@@ -221,7 +221,7 @@ http://localhost:8501
 
 # 👨‍💻 Author
 
-Developed by V
+Developed by Datasynth-LLM
 
 GitHub:
 https://github.com/Datasynth-LLM
